@@ -59,7 +59,7 @@ r <-  opq(bbox = BB) %>%
   osmdata_sf ()
 
 
-cols <- c("#125C13","#3E7C17","#F4A442","#E8E1D9")
+cols <- c("#125C13","#3E7C17","#BFD8B8","#F4A442","#E8E1D9")
 
 
 plot(q$osm_polygons)
