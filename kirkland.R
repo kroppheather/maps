@@ -5,14 +5,14 @@ library(mapview)
 library(raster)
 library(tmap)
 
-treeH <- raster("E:/Google Drive/GIS/forest/Forest_height_2019_NAM.tif",
-                format="GTiff")
+#treeH <- raster("E:/Google Drive/GIS/forest/Forest_height_2019_NAM.tif",
+   #             format="GTiff")
 
 BB <- c(-75.4958,43.0102,-75.3087,43.0941)
 
 treeC <- crop(treeH, extent(c(-75.4958,-75.3087,43.0102,43.0941)))
 #writeRaster(treeC, "E:/Google Drive/GIS/Kirkland/kirkland_height_2019.tif",
-            format="GTiff", overwrite=TRUE)
+#            format="GTiff", overwrite=TRUE)
 
 
 big_streets <-  opq(bbox=BB)%>%
@@ -65,12 +65,14 @@ r <-  opq(bbox = BB) %>%
 
 
 cols1 <- c("#125C13","#3E7C17","#BFD8B8","#F4A442","#E8E1D9")
-cols2 <- c("#a1cca5", "#FEF5ED","#D3E4CD","#ADC2A9", "#99A799")
-cols3 <- c("#7a918d","#a1cca5","#8fb996","#709775","#415d43")
+cols2 <- c("#a1cca5", "#FEF5ED","#D3E4CD","#ADC2A9", "#99A799","#0f2c30")
+cols3 <- c("#7a918d","#a1cca5","#8fb996","#709775","#415d43","#0f2c30")
 
-cols4 < - c("#7a918d","#a1cca5","#8fb996","#709775","#415d43")
+cols4 <- c("#7a918d","#a1cca5","#8fb996","#709775","#415d43","#0f2c30")
 
 cols5 <- c("#70967e","#568664","#367348","#346847","#2c523d","#2c523d")
+
+cols6 <- c("#70967e90","#56866490","#36734890","#34684790","#2c523d90","#2c523d90")
 
 order(unique(getValues(treeC)))
 
@@ -90,4 +92,32 @@ treeSub <- calc(treeC, tallF)
 
 tm_shape(treeSub)+
   tm_raster(palette ="Greens",
-            style="fisher")
+            style="sd")
+
+
+
+test <- tm_shape(treeSub)+
+  tm_raster(palette ="Greens",
+            style="sd")
+
+tm_shape(treeSub)+
+  tm_raster(palette ="Greens")
+
+#breaks SD with rounding
+breaksSD <- c(0,3,8,12.5,17,22,26,31)
+breaksEqual <- c(0,5,10,15,20,25,31)
+
+
+plot(treeSub, col=c("white",cols3),
+     breaks=breaksSD)
+
+plot(all_streets$osm_lines$geometry, col="grey30",  add=TRUE)
+
+
+
+plot(treeSub, col=c("white",cols4),
+     breaks=breaksSD)
+
+plot(all_streets$osm_lines$geometry, col="grey30",  add=TRUE)
+
+plot(r$osm_lines$geometry, col="royalblue3", add=TRUE)
