@@ -121,3 +121,7 @@ plot(treeSub, col=c("white",cols4),
 plot(all_streets$osm_lines$geometry, col="grey30",  add=TRUE)
 
 plot(r$osm_lines$geometry, col="royalblue3", add=TRUE)
+
+plot(treeSub, col=c("grey30",cols3),colNA="grey30",
+     breaks=breaksSD)
+plot(all_streets$osm_lines$geometry, col="white",  add=TRUE)
