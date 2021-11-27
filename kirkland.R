@@ -130,18 +130,7 @@ plot(treeSub, col=c("grey30",cols3),colNA="grey30",
 plot(all_streets$osm_lines$geometry, col="white",  add=TRUE)
 
 
-elevation_data <- get_elev_raster(treeC, z = 9)
 
-slope <- terrain(elevation_data, opt=
-                   "slope")
-
-aspect <- terrain(elevation_data, opt=
-                   "aspect")
-
-hillshadE <- hillShade(slope,aspect)
-
-
-plot(hillshadE, col=grey(1:100/100,0.5), add=TRUE)
 
 
 cElev <- raster("E:/Google Drive/GIS/Kirkland/p35elu.dem")
@@ -161,3 +150,62 @@ hillshade <- hillShade(slope,aspect)
 plot(treeSub, col=c("white",cols4),
      breaks=breaksSD)
 plot(hillshadE, col=grey(1:100/100, 0.25), add=TRUE)
+
+
+lulc <- raster("E:/Google Drive/GIS/NLCD_2016_Land_Cover_L48_20190424/NLCD_2016_Land_Cover_L48_20190424.img")
+plot(lulc, axes=TRUE)
+
+lulC <- crop(lulc,extent(1550000,1720000,2350000,2420000))
+plot(lulC)
+
+lulCp <- projectRaster(lulC, crs=treeC@crs, method="ngb")
+
+
+lulCk <- crop(lulCp,treeC)
+plot(lulCk)
+unique(getValues(lulCk))
+help(projectRaster)
+
+# isolate landcover
+
+#crops
+
+cropsF <- function(x){
+  ifelse(x == 82,1,NA)
+}
+crops <- calc(lulCk,cropsF)
+
+plot(treeSub, col=c("white",cols4),
+     breaks=breaksSD)
+plot(crops, col="#b8860b55",add=TRUE)
+
+wetlandsF <- function(x){
+  ifelse(x == 90 | x == 95,1,NA)
+}
+wetlands <- calc(lulCk,wetlandsF)
+plot(wetlands, col="cornflowerblue", add=TRUE)
+
+plot(lulCk)
+#81: pasture hay
+#90: woody wetlands
+#95: emergent herbacious wetlands
+#41: deciduous forest
+#21: Developed, Open Space - 
+#   Includes areas with a mixture of some constructed materials, but mostly vegetation in the form of lawn grasses. 
+#   Impervious surfaces account for less than 20 percent of total cover. 
+# These areas most commonly include large-lot single-family housing units, parks, golf courses, and vegetation 
+# planted in developed settings for recreation, erosion control, or aesthetic purposes
+
+# 82: Cultivated Crops Areas used for the production of annual crops, such as corn, soybeans, vegetables, tobacco, and cotton, and also perennial woody crops such as orchards
+# 43: Mixed Forest - Areas dominated by trees generally greater than 5 meters tall
+# 71:Grassland/Herbaceous - Areas dominated by grammanoid or herbaceous vegetation, generally greater than 80% of total vegetation
+# 11: Open Water - All areas of open water, generally with less than 25% cover or vegetation or soil
+# 52: Shrub/Scrub - Areas dominated by shrubs; 
+# 42: Evergreen Forest 
+# 22: Developed, Low Intensity
+# 23: Developed, Medium Intensity
+# 24: Developed, High Intensity
+# 31: Barren Land (Rock/Sand/Clay) - Barren areas of bedrock, desert pavement, 
+#     scarps, talus, slides, volcanic material, glacial debris, sand dunes, 
+#     strip mines, gravel pits and other accumulations of earthen material. 
+#    Generally, vegetation accounts for less than 15% of total cover
