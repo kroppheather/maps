@@ -4,16 +4,19 @@ library(sf)
 library(mapview)
 library(raster)
 library(tmap)
+library(elevatr)
+library(progress)
+
 
 #treeH <- raster("E:/Google Drive/GIS/forest/Forest_height_2019_NAM.tif",
    #             format="GTiff")
 
 BB <- c(-75.4958,43.0102,-75.3087,43.0941)
 
-treeC <- crop(treeH, extent(c(-75.4958,-75.3087,43.0102,43.0941)))
+# treeC <- crop(treeH, extent(c(-75.4958,-75.3087,43.0102,43.0941)))
 #writeRaster(treeC, "E:/Google Drive/GIS/Kirkland/kirkland_height_2019.tif",
 #            format="GTiff", overwrite=TRUE)
-
+treeC <- raster("E:/Google Drive/GIS/Kirkland/kirkland_height_2019.tif")
 
 big_streets <-  opq(bbox=BB)%>%
   add_osm_feature(key = "highway", 
@@ -125,3 +128,36 @@ plot(r$osm_lines$geometry, col="royalblue3", add=TRUE)
 plot(treeSub, col=c("grey30",cols3),colNA="grey30",
      breaks=breaksSD)
 plot(all_streets$osm_lines$geometry, col="white",  add=TRUE)
+
+
+elevation_data <- get_elev_raster(treeC, z = 9)
+
+slope <- terrain(elevation_data, opt=
+                   "slope")
+
+aspect <- terrain(elevation_data, opt=
+                   "aspect")
+
+hillshadE <- hillShade(slope,aspect)
+
+
+plot(hillshadE, col=grey(1:100/100,0.5), add=TRUE)
+
+
+cElev <- raster("E:/Google Drive/GIS/Kirkland/p35elu.dem")
+
+plot(cElev)
+
+cElevp <- projectRaster(cElev, crs=treeC@crs)
+
+slope <- terrain(cElevp, opt=
+                   "slope")
+
+aspect <- terrain(cElevp, opt=
+                    "aspect")
+
+hillshade <- hillShade(slope,aspect)
+
+plot(treeSub, col=c("white",cols4),
+     breaks=breaksSD)
+plot(hillshadE, col=grey(1:100/100, 0.25), add=TRUE)
