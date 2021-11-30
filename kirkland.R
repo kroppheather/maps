@@ -36,11 +36,10 @@ plot(med_streets$osm_lines$geometry)
 
 small_streets <-  opq(bbox = BB)%>%
   add_osm_feature(key = "highway", 
-                  value = c("residential", "living_street",
-                            "unclassified",
-                            "service", "footway", "road",
+                  value = c("residential"
                   ))%>%
   osmdata_sf()
+#  "service", "unclassified", 
 
 plot(small_streets$osm_lines$geometry)
 
@@ -48,10 +47,20 @@ all_streets <- opq(bbox = BB)%>%
   add_osm_feature(key = "highway", 
                   value = available_tags("highway"))%>%
   osmdata_sf()
+library(ggplot2)
 
+plot(all_streets$osm_lines$geometry, lwd=0.005, col="grey")
+plot(med_streets$osm_lines$geometry, lwd=1, col="black", add=TRUE)
+plot(small_streets$osm_lines$geometry, lwd=1, col="black", add=TRUE)
+ggplot(all_streets$osm_points)+
+  geom_sf()
 
-available_tags("highway")
+library(smoothr)
+tm_shape(all_streets)+
+  smooth_map()
 
+street_smooth <- smooth(all_streets$osm_lines, method = "ksmooth", smoothness = 2.8)
+plot(street_smooth$geometry)
 plot(all_streets$osm_lines$geometry)
 
 mapview(small_streets$osm_lines$geometry)+
@@ -104,7 +113,9 @@ test <- tm_shape(treeSub)+
             style="sd")
 
 tm_shape(treeSub)+
-  tm_raster(palette ="Greens")
+  tm_raster(palette ="Greens")+
+  tm_shape(all_streets$osm_lines)+
+  tm_lines(col="grey50", alpha=0.75,lwd=0.5)
 
 #breaks SD with rounding
 breaksSD <- c(0,3,8,12.5,17,22,26,31)
@@ -122,6 +133,8 @@ plot(treeSub, col=c("white",cols4),
      breaks=breaksSD)
 
 plot(all_streets$osm_lines$geometry, col="grey30",  add=TRUE)
+plot(all_streets$osm_lines$geometry, col="grey30")
+
 
 plot(r$osm_lines$geometry, col="royalblue3", add=TRUE)
 
@@ -131,7 +144,10 @@ plot(all_streets$osm_lines$geometry, col="white",  add=TRUE)
 
 
 
-
+tm_shape(treeSub)+
+  tm_raster(palette ="Greens")+
+  tm_shape(all_streets$osm_lines)+
+  tm_lines(size=0.5)
 
 cElev <- raster("E:/Google Drive/GIS/Kirkland/p35elu.dem")
 
@@ -184,7 +200,7 @@ wetlandsF <- function(x){
 }
 wetlands <- calc(lulCk,wetlandsF)
 plot(wetlands, col="cornflowerblue", add=TRUE)
-
+plot(r$osm_lines$geometry, col="royalblue3", lwd=2,add=TRUE)
 plot(lulCk)
 #81: pasture hay
 #90: woody wetlands
