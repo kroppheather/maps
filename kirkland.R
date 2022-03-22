@@ -26,6 +26,8 @@ big_streets <-  opq(bbox=BB)%>%
 plot(big_streets$osm_lines$geometry)
 
 
+
+
 med_streets <-  opq(bbox=BB)%>%
   add_osm_feature(key = "highway", 
                   value = c("secondary", "tertiary", "secondary_link", "tertiary_link")) %>%
@@ -121,11 +123,29 @@ tm_shape(treeSub)+
 breaksSD <- c(0,3,8,12.5,17,22,26,31)
 breaksEqual <- c(0,5,10,15,20,25,31)
 
+streetLines <- all_streets$osm_lines
+test <- st_read("c:/Users/hkropp/Downloads/all_street_osm.shp")
+plot(streetLines$geometry, axes=TRUE)
 
+st_write(streetLines, "c:/Users/hkropp/Downloads/all_streets_osm.shp",
+         driver="ESRI Shapefile")
+
+campus <- extent(-75.44,43.035,-75.40,43.06)
+streetCampus <- st_crop(streetLines, campus)
+plot(streetCampus$geometry,axes=TRUE)
+
+st_write(streetCampus, "c:/Users/hkropp/Downloads/streets_osm.shp",
+         driver="ESRI Shapefile")
+
+strC <- st_cast(streetCampus, "LINESTRING")
+plot(strC$geometry)
+
+st_write(strC, "c:/Users/hkropp/Downloads/streets_osm2.shp",
+         driver="ESRI Shapefile")
 plot(treeSub, col=c("white",cols3),
      breaks=breaksSD)
 
-plot(all_streets$osm_lines$geometry, col="grey30",  add=TRUE)
+plot(all_streets$osm_lines$geometry, col="grey30")
 
 
 
