@@ -142,6 +142,18 @@ plot(strC$geometry)
 
 st_write(strC, "c:/Users/hkropp/Downloads/streets_osm2.shp",
          driver="ESRI Shapefile")
+
+mapview(strC)
+
+
+paths <- strC[strC$highway == "path",] 
+plot(paths$geometry)
+
+pathsSub <- paths[,c("osm_id","geometry","highway")]
+plot(pathsSub$geometry)
+st_write(pathsSub, "c:/Users/hkropp/Downloads/osm_path.shp",
+         driver="ESRI Shapefile")
+
 plot(treeSub, col=c("white",cols3),
      breaks=breaksSD)
 
